@@ -16,6 +16,12 @@ if [ "${EUID:-$(id -u)}" -ne 0 ]; then
   exit 1
 fi
 
+# Check if we have connectivity to the landscape server
+if ! curl -s --head "http://$LANDSCAPE_HOST/ping" | grep "200 OK" >/dev/null; then
+  echo "Error: Unable to reach Landscape server at http://$LANDSCAPE_HOST/ping" >&2
+  exit 1
+fi
+
 # Validate token is provided
 if [ "$PRO_TOKEN" = "token_not_set" ] || [ -z "$PRO_TOKEN" ]; then
   echo "Error: PRO_TOKEN is not set. Export PRO_TOKEN in the environment and re-run." >&2
